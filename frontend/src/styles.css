@@ -1,0 +1,116 @@
+:root {
+  color: #243140;
+  background: #f4f6f8;
+  font-family: "Segoe UI", Calibri, sans-serif;
+  line-height: 1.45;
+}
+
+* { box-sizing: border-box; }
+
+body { margin: 0; }
+
+h1, h2 { margin: 0; }
+
+h1 { font-size: 1.6rem; color: #16324f; }
+
+h2 { font-size: 1rem; color: #16324f; }
+
+button, .text-button {
+  background: #16324f;
+  color: white;
+  border: 0;
+  border-radius: 8px;
+  padding: 0.6rem 0.9rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+input, select {
+  width: 100%;
+  margin-top: 0.25rem;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid #d5dde3;
+  border-radius: 8px;
+}
+
+label { display: block; font-size: 0.9rem; }
+
+.eyebrow {
+  margin: 0 0 0.2rem;
+  color: #1f6f8b;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.auth-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+}
+
+.auth-card {
+  width: min(420px, 100%);
+  display: grid;
+  gap: 0.8rem;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 14px;
+  border: 1px solid #e4ddd2;
+}
+
+.auth-links { display: flex; justify-content: space-between; font-size: 0.9rem; }
+
+.form-error { color: #8a3b32; margin: 0; }
+
+.form-note { color: #3e4a54; margin: 0; }
+
+.app-shell {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.25rem;
+  display: grid;
+  gap: 0.8rem;
+}
+
+.topbar, .status-row, .split {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.topbar { grid-template-columns: 1fr auto; align-items: center; }
+
+.status-row, .split { grid-template-columns: 1.2fr 0.8fr; }
+
+.panel {
+  background: white;
+  border: 1px solid #e4ddd2;
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.placeholder {
+  min-height: 88px;
+  border: 1px dashed #c9d3da;
+  border-radius: 8px;
+  padding: 0.8rem;
+  color: #5c6b76;
+  background: #f7f5f1;
+}
+
+.placeholder.tall { min-height: 220px; }
+
+.metric { margin: 0; font-size: 1.3rem; color: #16324f; }
+
+.status-value { margin: 0; text-transform: capitalize; }
+
+.chat-form { display: grid; grid-template-columns: 1fr auto; gap: 0.5rem; }
+
+.file-field input { background: white; }
+
+@media (max-width: 800px) {
+  .status-row, .split, .topbar, .chat-form { grid-template-columns: 1fr; }
+}
