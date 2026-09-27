@@ -47,7 +47,7 @@ strong { color: #16324F; }
 
 # Intelligent Wellbore Fracture & Facies Analysis
 
-<div style="font-family: Segoe UI, Calibri, sans-serif; font-size: 13px; color: #5C6B76; margin: 4px 0 12px;">Delivery plan · app 27 September – 1 November 2026 · Ahmed’s documentation and Mariam’s slides before 31 December 2026</div>
+<div style="font-family: Segoe UI, Calibri, sans-serif; font-size: 13px; color: #5C6B76; margin: 4px 0 12px;">Delivery plan · app 27 September – 15 December 2026 · Ahmed’s documentation and Mariam’s slides before 20 January 2027</div>
 
 
 ## The project
@@ -58,9 +58,11 @@ The main goal is to analyze FMI (Formation MicroImager) wellbore images together
 
 A user creates an account, uploads data for a well, and clicks **Analyze Well**. The system then automatically processes the well through the complete analysis pipeline: fracture detection, fracture geometry, tadpole visualization, well-log integration, and facies/zone classification. The results are stored under the user's account and can be viewed later through the dashboard, along with a generated well analysis report.
 
+**Mariam** owns the screens, the AI models, the assistant, and the calculations: depth, dip, azimuth, and log alignment. **Ahmed** owns the backend only: accounts, the database, file storage, and the APIs.
+
 <div style="font-family: Segoe UI, Calibri, sans-serif; background: #F7F5F1; border: 1px solid #E4DDD2; border-radius: 10px; padding: 14px 16px 12px; margin: 10px 0 6px;">
   <div style="font-family: Georgia, 'Times New Roman', serif; font-size: 18px; color: #16324F;">Project pipeline</div>
-  <div style="color: #6A7782; font-size: 13px; margin: 2px 0 10px;">Each step feeds the next · 27 Sep – 1 Nov 2026</div>
+  <div style="color: #6A7782; font-size: 13px; margin: 2px 0 10px;">Each step feeds the next · 27 Sep – 15 Dec 2026</div>
   <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; font-size: 13px; color: #243140;">
     <div style="background: #fff; border-radius: 6px; padding: 7px 10px;"><span style="color: #1F6F8B; font-weight: 700;">01</span> &nbsp; Sign up / Log in / Reset password</div>
     <div style="background: #fff; border-radius: 6px; padding: 7px 10px;"><span style="color: #1F6F8B; font-weight: 700;">07</span> &nbsp; Facies / Zone Classification</div>
@@ -80,185 +82,233 @@ A user creates an account, uploads data for a well, and clicks **Analyze Well**.
 
 ---
 
-## Week 1 — Data contract and empty app
+## Week 1 — Dataset inspection
 
-**27 Sep – 3 Oct** · Both people know the real files, and an empty app runs locally.
+**27 Sep – 3 Oct**
 
-### Mariam — Dataset inspection
-
-**27 Sep – 30 Sep**
+### Mariam
 
 - List every file for 16A, 16B, and 56-32: FMI format, size, depth range, resolution.
 - Decide whether fracture labels are pixel masks, polylines, or a depth / dip / azimuth table.
 - Decide whether facies labels exist. Write yes or no and the real class names. Do not invent classes.
-- Write the data contract: how depth is stored, how images align to logs, and the train / test well split.
+- Write how depth is stored, how images align to logs, and the train / test well split.
 - Place raw files under `data/raw/`.
 
-### Mariam — Login, signup, and dashboard shell
+### Ahmed
 
-**1 Oct – 3 Oct**
+- Confirm the FastAPI app, SQLite, and module folders run locally.
+- Add the health check.
 
-- Agree JSON with Ahmed on **1 Oct**.
-- Sign up (name, email, password), log in, and log out.
-- **Forgot password:** enter the account email, set a new password, then log in with it.
-- After login, show the dashboard: well selector, status, FMI panel, stats, facies, tadpole, logs, chat.
-- Use placeholder data that matches the JSON.
-- Show **Run Well Analysis** even if the job is not wired yet.
-- Send a logged-out visitor to the log in page.
-
-### Ahmed — Backend skeleton and accounts
-
-**27 Sep – 3 Oct**
-
-- Create the FastAPI app, SQLite, and the module folders.
-- User table and endpoints: sign up, log in, log out, current user, reset password. Store a password hash. Reset replaces the hash for that email.
-- Stub the later endpoints: upload, analysis, fractures, facies, logs, visualizations, chat, my reports, download.
-- Agree JSON with Mariam by **1 Oct**.
-- Add a health check and a local run command.
-
-> **Checkpoint · 3 Oct** — Data contract is written, the API runs, a new account can sign up, that account can reset its password, and the dashboard appears only after login.
+> **Checkpoint · 3 Oct** — The data note is written and the API answers `/health`.
 
 ---
 
-## Week 2 — See the well
-
-**4 Oct – 10 Oct** · Upload one well and see the FMI image and logs against depth.
-
-### Mariam — Preprocessing
-
-**4 Oct – 7 Oct**
-
-- Read FMI as the contract describes. Normalize, handle gaps, and tile large images.
-- Save training samples. Keep this code separate from the model.
-- By **7 Oct**, give Ahmed the inference signature: image tile in, fracture trace or mask out. The body may still be a stub.
-
-### Mariam — FMI and upload screen
-
-**8 Oct – 10 Oct**
-
-- Upload FMI and log files, then select the well.
-- FMI viewer with a depth scale.
-- Analysis status bound to the status API.
-
-### Ahmed — Loaders and depth
+## Week 2 — Accounts
 
 **4 Oct – 10 Oct**
 
-- FMI reader and well-log reader for the columns that actually exist.
-- Map an image row to measured depth from the file metadata.
-- Store the upload on the logged-in user. Status is idle, running, done, or failed. Another user’s well id is not returned.
-- Align logs to the FMI depth range. Missing logs stay missing.
-- Image and log endpoints ready by **8 Oct**.
+### Mariam
 
-> **Checkpoint · 10 Oct** — One real well opens with the image and logs on the same depth axis.
+- Sign up, log in, and log out screens.
+- **Forgot password:** enter the account email and set a new password.
+
+### Ahmed
+
+- User table: name, email, password hash.
+- Endpoints: sign up, log in, log out, current user, reset password.
+
+> **Checkpoint · 10 Oct** — A new account can sign up, reset its password, and log in again.
 
 ---
 
-## Week 3 — Fractures
-
-**11 Oct – 17 Oct** · Detect fractures, compute geometry, show them on the image and in a table.
-
-### Mariam — Fracture model
-
-**11 Oct – 15 Oct**
-
-- Train the model chosen in week 1. Prefer U-Net if pixel or trace labels exist. If labels are only a fracture table, train a depth-window detector and say so in the model note.
-- Metrics: precision, recall, F1, and IoU where masks exist. The test well is held out.
-- Export weights to `models/fracture_model/` with a short model card: data, split, metrics, known failures.
-- Do not add a fracture-type head unless type labels are real.
-
-### Mariam — Fracture screen
-
-**16 Oct – 17 Oct**
-
-- Draw detected traces on the FMI image.
-- Table: count, depth, dip, azimuth, type, confidence.
-- **Run Well Analysis** starts the job and refreshes when status is done.
-
-### Ahmed — Geometry and storage
+## Week 3 — Dashboard shell
 
 **11 Oct – 17 Oct**
 
-- Call Mariam’s model from the analysis job. Keep inference separate from geometry.
-- For each trace store measured depth, dip, azimuth, and confidence. Store TVD only if the file has it. Store type only if it is labeled.
-- Save wells, fractures, and sessions in SQLite, each row tied to the user who ran the analysis.
-- Fractures API filters by depth and is stable by **15 Oct**.
+### Mariam
 
-> **Checkpoint · 17 Oct** — One analyzed well shows overlays and a table that matches the database. If training slips, the overlay moves to 18–19 Oct.
+- After login, show the dashboard: well selector, status, FMI panel, fractures, facies, tadpole, logs, and chat.
+- A logged-out visit goes to log in.
+
+### Ahmed
+
+- Agree the JSON for user, well, fracture, status, and report on **11 Oct**.
+- Leave the later endpoints in place: upload, analysis, fractures, facies, logs, chat, reports.
+
+> **Checkpoint · 17 Oct** — The dashboard opens only after login.
 
 ---
 
-## Week 4 — Tadpole, logs, and facies
-
-**18 Oct – 24 Oct** · Orientation plot, logs, and zones.
-
-### Mariam — Tadpole, logs, and zones
-
-**18 Oct – 21 Oct**
-
-- Tadpole: zoom, filter by depth, filter by type, click for fracture details.
-- Well-log tracks versus depth.
-- Facies intervals beside the logs, including an empty state for “labels unavailable.”
-
-### Mariam — Facies model
-
-**22 Oct – 24 Oct**
-
-- Depth-aligned features: fracture density, orientation stats, simple image texture, plus the available logs.
-- If zone labels exist, train one classifier (Random Forest or XGBoost).
-- Metrics: accuracy, precision, recall, F1, confusion matrix, on the held-out well when labels cover it.
-- If labels do not exist, deliver the feature table and “facies unavailable.” No invented class names.
-- Connect the zones panel to the real API on **24 Oct**.
-
-### Ahmed — APIs and the analysis job
+## Week 4 — Read the FMI image
 
 **18 Oct – 24 Oct**
 
-- Tadpole payload ready **19 Oct**: depth, dip, azimuth, id, type.
-- Log series API ready **19 Oct**.
-- Facies API: start depth, end depth, class, confidence, or an explicit unavailable flag.
-- One job runs preprocess, detect, geometry, features, facies, and save.
-- Report numbers come from the database: well info, fracture count, orientation stats, facies summary, confidences.
-- Save the report on the analysis owner. The list returns only the caller’s rows.
+### Mariam
 
-> **Checkpoint · 24 Oct** — The full picture is on screen: image, table, tadpole, logs, and zones.
+- Read the FMI image the way the data note describes.
+- Normalize, handle gaps, and tile large images.
+- Map an image row to measured depth from the file metadata.
+
+### Ahmed
+
+- Store the FMI file and serve it through the API.
+- Save the depth metadata with the well. He does not calculate depth.
+
+> **Checkpoint · 24 Oct** — One image can be read and a row can be turned into depth.
 
 ---
 
-## Week 5 — Assistant, report, and demo
+## Week 5 — Show the FMI image
 
-**25 Oct – 1 Nov** · Grounded chat, a private PDF, and a rehearsed demo. No new science after 28 Oct.
+**25 Oct – 31 Oct**
 
-### Ahmed — Agent and PDF
+### Mariam
 
-**25 Oct – 28 Oct**
+- Upload the FMI file and select the well.
+- FMI viewer with a depth scale.
 
-- Tools only: analyze well, detect fractures, geometry, depth, tadpole data, classify facies, query wells, query results, generate report.
-- Tools read the database and only the logged-in user’s rows. Counts and “highest fracture density” are computed.
-- A missing field returns unavailable.
-- Download returns a PDF the caller owns. Another user’s report id is not found.
-- Chat and report payloads ready **26 Oct**.
+### Ahmed
 
-### Mariam — Chat, My Reports, and evaluation
+- Store the upload on the logged-in user.
+- Image endpoint ready by **29 Oct**. Another user’s well is not returned.
 
-**25 Oct – 28 Oct**
+> **Checkpoint · 31 Oct** — One real well opens with the FMI image and a depth scale.
 
-- **25–26 Oct:** chat scoped to the selected well. **My Reports** lists only this account. Each report opens in the app and has **Download**.
-- **27–28 Oct:** one-page evaluation — fracture metrics on the test well, facies metrics or “no labels,” and failure examples.
-- Check five agent answers against the database: count in a depth window, dip filter, highest density, explain one fracture, generate a report.
-- Fix empty states and errors on upload and failed analysis.
+---
 
-### Both — Freeze and demo
+## Week 6 — Well logs
 
-**29 Oct – 1 Nov**
+**1 Nov – 7 Nov**
 
-- **28 Oct** — feature freeze.
-- **29 Oct** — demo on a clean database with two accounts. Account B cannot see or download account A’s report.
-- **30 Oct** — fix only demo-blocking bugs.
-- **31 Oct** — second rehearsal and defense screenshots.
-- **1 Nov** — local demo. README explains install, where to put data, and how to run the backend and frontend.
+### Mariam
 
-### Demo script
+- Align the logs to the FMI depth range. Missing logs stay missing.
+- Well-log tracks versus depth.
+
+### Ahmed
+
+- Read the log file and store only the columns that exist.
+- Logs API returns those stored curves for the logged-in user.
+
+> **Checkpoint · 7 Nov** — Image and logs share one depth axis.
+
+---
+
+## Week 7 — Prepare fracture training
+
+**8 Nov – 14 Nov**
+
+### Mariam
+
+- Save training samples from the tiled images.
+- Choose the model from the real labels. Prefer U-Net if pixel or trace labels exist. If labels are only a table, plan a depth-window detector.
+- Write the inference function: image tile in, fracture trace or mask out. Ahmed will call it. He will not change the model.
+
+### Ahmed
+
+- Analysis status: idle, running, done, or failed.
+
+> **Checkpoint · 14 Nov** — Training samples are saved and the status API works.
+
+---
+
+## Week 8 — Train the fracture model
+
+**15 Nov – 21 Nov**
+
+### Mariam
+
+- Train the model. The test well is held out.
+- Metrics: precision, recall, F1, and IoU where masks exist.
+- Export weights to `models/fracture_model/` with a short model card.
+- Do not add a fracture-type head unless type labels are real.
+
+### Ahmed
+
+- The analysis job calls Mariam’s saved model and stores the traces it returns.
+
+> **Checkpoint · 21 Nov** — The model runs on one well and returns traces.
+
+---
+
+## Week 9 — Depth, dip, and azimuth
+
+**22 Nov – 28 Nov**
+
+### Mariam
+
+- Calculate measured depth, dip, and azimuth from each trace.
+- Use TVD only if the file has it. Use type only if it is labeled.
+- Draw the traces on the FMI image.
+- Table: count, depth, dip, azimuth, type, confidence.
+- **Analyze Well** starts the job and refreshes when status is done.
+
+### Ahmed
+
+- Save the depth, dip, azimuth, confidence, and optional TVD and type that Mariam calculates.
+- Fractures API filters by depth. Each row belongs to the user who ran the analysis.
+
+> **Checkpoint · 28 Nov** — The table matches the database.
+
+---
+
+## Week 10 — Tadpole plot
+
+**29 Nov – 5 Dec**
+
+### Mariam
+
+- Tadpole plot: zoom, filter by depth, filter by type, click a tadpole for that fracture.
+
+### Ahmed
+
+- Tadpole payload: depth, dip, azimuth, id, type.
+
+> **Checkpoint · 5 Dec** — A clicked tadpole matches the same fracture in the table.
+
+---
+
+## Week 11 — Facies
+
+**6 Dec – 12 Dec**
+
+### Mariam
+
+- Features: fracture density, orientation stats, simple image texture, and the available logs.
+- If zone labels exist, train one classifier and report accuracy, precision, recall, F1, and a confusion matrix.
+- If they do not, show “facies unavailable.” No invented class names.
+- Draw the zones beside the logs.
+
+### Ahmed
+
+- Save the facies rows Mariam returns and serve them: start depth, end depth, class, confidence, or an explicit unavailable flag.
+- The analysis job calls Mariam’s functions, then saves the rows. Ahmed does not calculate dip, azimuth, or facies.
+
+> **Checkpoint · 12 Dec** — Image, table, tadpole, logs, and zones are on screen.
+
+---
+
+## Week 12 — Assistant, report, and demo
+
+**13 Dec – 15 Dec**
+
+### Ahmed
+
+- Chat endpoint and report download, both limited to the logged-in user.
+- Another user’s report is not found. Ahmed does not write the assistant’s answers.
+
+### Mariam
+
+- The assistant answers only from stored rows. A missing field is unavailable.
+- Chat on the selected well.
+- **My Reports** lists only this account, and each report has **Download**.
+- Run the demo once on the held-out well.
+
+> **Checkpoint · 15 Dec** — Two accounts. Each sees and downloads only their own report. The demo script passes.
+
+---
+
+## Demo script
 
 Rehearse this on the held-out well the night before. Use one of 16A(78)-32, 16B(78)-32, or 56-32 — the well that was not used to train the fracture model. Write the real depth window, fracture count, and one fracture id on a card. Every number said out loud must match the screen. If a value was not computed, the assistant says it is unavailable.
 
@@ -315,14 +365,14 @@ Log out. Log in as a second account. **My Reports** does not list the first repo
 
 ## Ahmed — Documentation
 
-**2 Nov – 31 Dec 2026**
+**16 Dec 2026 – 19 Jan 2027**
 
-Ahmed writes this after the 1 November demo. He must finish it by **31 December 2026**.
+Ahmed writes the documentation after the 15 December demo. He must finish it before **20 January 2027**.
 
 ---
 
 ## Mariam — Presentation slides
 
-**2 Nov – 30 Dec 2026**
+**16 Dec 2026 – 19 Jan 2027**
 
-Mariam prepares the presentation slides after the 1 November demo. She must finish them before **31 December 2026**.
+Mariam prepares the presentation slides after the 15 December demo. She must finish them before **20 January 2027**.
